@@ -1,0 +1,15 @@
+include("${CMAKE_CURRENT_LIST_DIR}/sialibTargets.cmake")
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
+
+set(SIALIB_INCLUDE_DIRS
+    @SIALIB_INSTALL_INCLUDE_DIRS@
+)
+
+set(SIALIB_DEFINITIONS "")
+set(SIALIB_LIBRARIES sialib::sialib)
+set(SIALIB_STATIC_LIBRARIES
+    sialib::sialib_static
+)
+
+set(SIALIB_FOUND TRUE)
