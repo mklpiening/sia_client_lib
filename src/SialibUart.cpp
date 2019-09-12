@@ -6,7 +6,7 @@
 namespace sialib
 {
 
-SialibUart::SialibUart(std::string port, int baudRate) : m_io(), m_serial(m_io, port)
+SialibUart::SialibUart(std::string port, int baudRate) : m_io(), m_serial(m_io, port), m_nBytes(0), m_rcvOk(false)
 {
     m_serial.set_option(boost::asio::serial_port_base::baud_rate(baudRate));
 
@@ -18,7 +18,7 @@ SialibUart::SialibUart(std::string port, int baudRate) : m_io(), m_serial(m_io, 
 
 void SialibUart::readUart()
 {
-    m_serial.async_read_some(boost::asio::buffer(m_receiveBuffer, 17),
+    m_serial.async_read_some(boost::asio::buffer(m_receiveBuffer, 48),
                              boost::bind(&SialibUart::onMessageReceived,
                                          this,
                                          boost::asio::placeholders::error,
@@ -28,53 +28,70 @@ void SialibUart::readUart()
 void SialibUart::onMessageReceived(const boost::system::error_code& error,
                                  std::size_t bytes_transferred)
 {
-    if (!error && bytes_transferred > 0)
+    Pethernet_msg_t msg;
+
+    for (int i = 0; i < bytes_transferred; i++)
     {
-        if (bytes_transferred == 1)
+        if (!m_rcvOk) 
         {
-            if (m_receiveBuffer[0] == 'a')
+            if (m_receiveBuffer[i] == ':')
             {
-                if (m_leftLeverHandler)
-                {
-                    m_leftLeverHandler(true);
-                    std::cout << "left lever: 1" << std::endl;
-                }
-            }
-            else if (m_receiveBuffer[0] == 'b')
-            {
-                if (m_leftLeverHandler)
-                {
-                    m_leftLeverHandler(false);
-                    std::cout << "left lever: 0" << std::endl;
-                }
-            }
-            else if (m_receiveBuffer[0] == 'c')
-            {
-                if (m_rightLeverHandler)
-                {
-                    m_rightLeverHandler(true);
-                    std::cout << "right lever: 1" << std::endl;
-                }
-            }
-            else if (m_receiveBuffer[0] == 'd')
-            {
-                if (m_rightLeverHandler)
-                {
-                    m_rightLeverHandler(false);
-                    std::cout << "right lever: 0" << std::endl;
-                }
+                m_rcvOk = true;
             }
         }
         else
         {
-            m_receiveBuffer[bytes_transferred] = '\0';
-            int angle = atoi((char*) m_receiveBuffer);
-
-            if (m_steeringWheelHandler)
+            if (m_nBytes >= sizeof(ethernet_msg_t))
             {
-                m_steeringWheelHandler(-angle);
-                std::cout << "steering angle: " << angle << std::endl;
+                break;
             }
+
+            m_messageBuffer[m_nBytes] = m_receiveBuffer[i];
+            m_nBytes++;
+        }
+    }   
+
+    if (!error && m_nBytes >= sizeof(ethernet_msg_t))
+    {
+        msg = (Pethernet_msg_t) m_messageBuffer;
+
+        m_nBytes = 0;
+        m_rcvOk = false;
+
+        if (m_leftLeverHandler)
+        {
+            m_leftLeverHandler(msg->steeringwheel_peripheral_left);
+            std::cout << "left: " << (bool) msg->steeringwheel_peripheral_left << std::endl;
+        }
+
+        if (m_rightLeverHandler)
+        {
+            m_leftLeverHandler(msg->steeringwheel_peripheral_right);
+            std::cout << "right: " << (bool) msg->steeringwheel_peripheral_right << std::endl;
+        }
+
+        if (m_brakeHandler)
+        {
+            m_brakeHandler(msg->brake);
+            std::cout << "brake: " << (int) msg->brake << std::endl;
+        }
+
+        if (m_throttleHandler)
+        {
+            m_throttleHandler(msg->throttle);
+            std::cout << "throttle: " << (int) msg->throttle << std::endl;
+        }
+
+        if (m_steeringWheelHandler)
+        {
+            m_steeringWheelHandler(msg->steeringwheel_angle);
+            std::cout << "steeringWheel: " << (int) msg->steeringwheel_angle << std::endl;
+        }
+
+        if (m_driveStateHandler)
+        {
+            m_driveStateHandler(msg->shifter_state);
+            std::cout << "driveState: " << (int) msg->shifter_state << std::endl;
         }
     }
 

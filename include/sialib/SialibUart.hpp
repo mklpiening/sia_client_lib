@@ -39,7 +39,11 @@ class SialibUart : public Sialib
     boost::asio::io_service m_io;
     boost::asio::serial_port m_serial;
 
-    uint8_t m_receiveBuffer[16];
+    uint8_t m_nBytes;
+    bool m_rcvOk;
+
+    uint8_t m_receiveBuffer[48];
+    uint8_t m_messageBuffer[9];
 };
 
 } // namespace sialib
