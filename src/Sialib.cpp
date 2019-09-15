@@ -5,7 +5,7 @@
 namespace sialib
 {
 
-void Sialib::handleMessage(ethernet_msg& msg)
+void Sialib::handleMessage(SiaMsg& msg)
 {
     if (throttleHandler)
     {

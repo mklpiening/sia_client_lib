@@ -6,7 +6,10 @@
 namespace sialib
 {
 
-enum driveState_t : uint8_t
+/**
+ * @brief state of the shifter
+ */
+enum DriveState : uint8_t
 {
     DRIVE      = 0, // Position D
     NEUTRAL    = 1, // Position N
@@ -17,16 +20,19 @@ enum driveState_t : uint8_t
 
 };
 
+/**
+ * @brief message that is being sent over uart or udp
+ */
 #pragma pack(push, 1)
-typedef struct ethernet_msg
+struct SiaMsg
 {
     int32_t steeringwheel_angle;
     bool steeringwheel_peripheral_left;
     bool steeringwheel_peripheral_right;
-    enum driveState_t shifter_state;
+    enum DriveState shifter_state;
     uint8_t throttle;
     uint8_t brake;
-} ethernet_msg_t, *Pethernet_msg_t; // Message type to send over ethernet
+};
 #pragma pack(pop)
 
 class Sialib
@@ -43,15 +49,20 @@ class Sialib
     std::function<void(bool)> leftLeverHandler;
     std::function<void(bool)> rightLeverHandler;
 
-    std::function<void(driveState_t)> driveStateHandler;
+    std::function<void(DriveState)> driveStateHandler;
     std::function<void()> shiftUpHandler;
     std::function<void()> shiftDownHandler;
 
   protected:
-    void handleMessage(ethernet_msg& msg);
+    /**
+     * @brief handles an incoming message and calls the handlers
+     * 
+     * @param msg incoming message to handle
+     */
+    void handleMessage(SiaMsg& msg);
 
   private:
-    driveState_t m_lastDriveState;
+    DriveState m_lastDriveState;
 };
 
 } // namespace sialib

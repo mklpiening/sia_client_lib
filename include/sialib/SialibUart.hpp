@@ -6,6 +6,8 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+#define UART_SYNCHRONIZER_BYTE ':'
+
 namespace sialib
 {
 
@@ -42,8 +44,8 @@ class SialibUart : public Sialib
     uint8_t m_nBytes;
     bool m_rcvOk;
 
-    uint8_t m_receiveBuffer[9];
-    uint8_t m_messageBuffer[9];
+    uint8_t m_receiveBuffer[sizeof(SiaMsg)];
+    uint8_t m_messageBuffer[sizeof(SiaMsg)];
 };
 
 } // namespace sialib
