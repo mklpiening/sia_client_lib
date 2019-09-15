@@ -42,7 +42,7 @@ class SialibUart : public Sialib
     uint8_t m_nBytes;
     bool m_rcvOk;
 
-    uint8_t m_receiveBuffer[48];
+    uint8_t m_receiveBuffer[9];
     uint8_t m_messageBuffer[9];
 };
 

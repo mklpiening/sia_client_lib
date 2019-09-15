@@ -15,6 +15,7 @@ find_package(Boost REQUIRED)
 ###########
 
 set(SIALIB_SOURCES
+    src/Sialib.cpp
     src/SialibUart.cpp
 )
 

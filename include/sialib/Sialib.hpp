@@ -32,20 +32,26 @@ typedef struct ethernet_msg
 class Sialib
 {
   public:
-    Sialib() {}
+    Sialib() : m_lastDriveState(NEUTRAL) {}
     ~Sialib() {}
 
     // event handlers
-    std::function<void(int)> m_throttleHandler;
-    std::function<void(int)> m_brakeHandler;
+    std::function<void(int)> throttleHandler;
+    std::function<void(int)> brakeHandler;
 
-    std::function<void(int)> m_steeringWheelHandler;
-    std::function<void(bool)> m_leftLeverHandler;
-    std::function<void(bool)> m_rightLeverHandler;
+    std::function<void(int)> steeringWheelHandler;
+    std::function<void(bool)> leftLeverHandler;
+    std::function<void(bool)> rightLeverHandler;
 
-    std::function<void(driveState_t)> m_driveStateHandler;
-    std::function<void()> m_shiftUpHandler;
-    std::function<void()> m_shiftDownHandler;
+    std::function<void(driveState_t)> driveStateHandler;
+    std::function<void()> shiftUpHandler;
+    std::function<void()> shiftDownHandler;
+
+  protected:
+    void handleMessage(ethernet_msg& msg);
+
+  private:
+    driveState_t m_lastDriveState;
 };
 
 } // namespace sialib
