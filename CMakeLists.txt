@@ -17,6 +17,7 @@ find_package(Boost REQUIRED)
 set(SIALIB_SOURCES
     src/Sialib.cpp
     src/SialibUart.cpp
+    src/SialibUdp.cpp
 )
 
 include_directories(include
