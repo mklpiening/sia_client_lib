@@ -29,7 +29,7 @@ void Sialib::handleMessage(SiaMsg& msg)
 
     if (rightLeverHandler)
     {
-        leftLeverHandler(msg.steeringwheel_peripheral_right);
+        rightLeverHandler(msg.steeringwheel_peripheral_right);
     }
 
     if (driveStateHandler)

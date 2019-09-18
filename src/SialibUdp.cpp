@@ -5,10 +5,14 @@
 namespace sialib
 {
 
-SialibUdp::SialibUdp(int port)
-    : m_io(), m_socket(m_io, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port))
+SialibUdp::SialibUdp(int port) : m_io(), m_socket(m_io)
 {
+    m_socket.open(boost::asio::ip::udp::v4());
+    m_socket.bind(
+        boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("0.0.0.0"), port));
+
     readUdp();
+    m_io.run();
 }
 
 void SialibUdp::readUdp()

@@ -32,6 +32,9 @@ struct SiaMsg
     enum DriveState shifter_state;
     uint8_t throttle;
     uint8_t brake;
+    bool shifter_sport_button;
+    bool shifter_park_button;
+    bool shifter_left_button;
 };
 #pragma pack(pop)
 
