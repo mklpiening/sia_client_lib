@@ -12,7 +12,8 @@ SialibUdp::SialibUdp(int port) : m_io(), m_socket(m_io)
         boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("0.0.0.0"), port));
 
     readUdp();
-    m_io.run();
+    boost::thread t(boost::bind(&boost::asio::io_service::run, &m_io));
+    m_ioThread.swap(t);
 }
 
 void SialibUdp::readUdp()
@@ -35,7 +36,7 @@ void SialibUdp::onMessageReceived(const boost::system::error_code& error,
         handleMessage(*msg);
     }
 
-    // receive the next uart message
+    // receive the next udp message
     readUdp();
 }
 

@@ -35,6 +35,7 @@ class SialibUdp : public Sialib
      */
     void onMessageReceived(const boost::system::error_code& error, std::size_t bytes_transferred);
 
+    boost::thread m_ioThread;
     boost::asio::io_service m_io;
     boost::asio::ip::udp::socket m_socket;
 
